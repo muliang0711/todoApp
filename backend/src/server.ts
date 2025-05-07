@@ -1,4 +1,5 @@
-// 1. This file starts the server by importing the Express app
+// src/server.ts
+
 import app from './app';
 
 const PORT = process.env.PORT || 3000;
