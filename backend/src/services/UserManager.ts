@@ -5,12 +5,12 @@
 import { User } from "../models/User";
 import { UserRepository } from "../respositories/UserRepository";
 import { Result } from "../types/common";
-
+import { createToken } from '../utils/jwt';
 // 2. define UserManager class to handle user-related business logic
 
 export class UserManager {
 
-    static async createUser(
+    static async UserRegister(
         name: string,
         email: string,
         password: string,
@@ -46,24 +46,42 @@ export class UserManager {
         };
     }
 
-    static async loginUser(
+    static async UserLogin(
         email: string,
-        password: string
-    ): Promise<Result<User>> {
-        // 1. Check if user exists
-        const existing = await UserRepository.Userlogin(email, password);
+        password: string,
+        rememberMe: boolean = false
+    ): Promise<Result<{user : User ; token? : string}>> {
+        // 1. Check if user exists than Login 
+        const result = await UserRepository.Userlogin(email, password);
 
-        if (!existing.success) {
+        // 2. If user not found, return error
+        if (!result.success || !result.data) {
             return {
                 success: false,
                 error: "Invalid email or password."
             };
         }
 
-        // 2. Return user data
+        // 3. Check if the rememberMe is true, if so create a token
+        let token: string | undefined;
+        if (rememberMe) {
+            token = createToken(
+                {
+                    email : result.data.getEmail(),
+                    name : result.data.getName(),
+                    type : result.data.getType()
+                },
+                '30d' // 30 days expiration
+            ); 
+        }
+        // 4. Return user data and token
         return {
             success: true,
-            data: existing.data
+            data: {
+                user: result.data,
+                token: token
+            }
         };
+
     }
 }

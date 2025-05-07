@@ -9,7 +9,6 @@ import { Result } from '../types/common';
 
 // 3. define UserRepository class to handle user-related database operations
 
-// 4. createUser method to insert a new user into the database
 export class UserRepository {
     // 1. createUser method to insert a new user into the database
     static async UserRegister(user: User): Promise<Result<number>> {
