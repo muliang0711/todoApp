@@ -1,0 +1,1 @@
+# using npx ts-node-dev src/server.ts to start server 
