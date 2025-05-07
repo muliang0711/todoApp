@@ -1,14 +1,22 @@
-// 1. This file sets up the Express app with basic middleware and export it
-import express from 'express';
+// app.ts
+import express from "express";
+import userRoutes from "./routes/UserRoutes";
+import bodyParser from "body-parser";
 
 const app = express();
+const PORT = 3000;
 
-// Middleware
-app.use(express.json());
+// Middleware to parse JSON
+app.use(bodyParser.json());
 
-// Sample route
-app.get('/', (req, res) => {
-  res.send('Welcome to the Todo API!');
+// Use user-related routes
+app.use("/api/users", userRoutes);
+
+// Default route
+app.get("/", (req, res) => {
+  res.send("Welcome to the API");
 });
 
-export default app;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});

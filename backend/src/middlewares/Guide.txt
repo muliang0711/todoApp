@@ -1,0 +1,9 @@
+Purpose: Logic that sits between the request and response, like:
+
+Authentication (verifyToken)
+
+Logging
+
+Error handling
+
+CORS handling

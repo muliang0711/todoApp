@@ -1,0 +1,46 @@
+[Frontend] 
+   ⬇ 
+POST http://localhost:3000/users/register
+   ⬇ 
+[server.ts]  --> launches server
+   ⬇ 
+[app.ts] --> applies global middlewares & mounts routes
+   ⬇ 
+[routes/userRoutes.ts] --> finds route handler
+   ⬇ 
+[validators/userValidator.ts] --> validate input
+   ⬇ 
+[controller/userController.ts] --> handle HTTP and call service
+   ⬇ 
+[services/userService.ts] --> business logic
+   ⬇ 
+[modules/UserModel.ts] --> SQL (DB Access)
+   ⬇ 
+[MySQL DB]
+
+
+UserController.register(req, res)
+    ↓
+RegisterUserUseCase.execute(data)
+    ↓
+UserManager.validateAndCreateUser(data)
+    ↓
+UserRepository.save(user)
+    ↓
+return new User()
+
+
+
+
+[HTTP Request]
+     ↓
+[Controller: UserController]
+     ↓
+[Manager: UserManager]
+     ↓
+[Repository: UserRepository]
+     ↓
+[Entity: User]
+     ↓
+[MySQL Database]
+
