@@ -1,10 +1,10 @@
 // routes/userRoutes.ts
 import { Router } from "express";
-import { registerUser } from "../controllers/UserController";
+import { UserRegister , UserLogin} from "../controllers/UserController";
 
 const router = Router();
 
 // POST /api/users/register
-router.post("/register", registerUser);
-
+router.post("/register", UserRegister);
+router.post("/login", UserLogin);
 export default router;
