@@ -49,7 +49,7 @@ export class UserManager {
     static async UserLogin(
         email: string,
         password: string,
-        rememberMe: boolean = false
+        rememberMe: boolean , 
     ): Promise<Result<{user : User ; token? : string}>> {
         // 1. Check if user exists than Login 
         const result = await UserRepository.Userlogin(email, password);
@@ -63,18 +63,19 @@ export class UserManager {
         }
 
         // 3. Check if the rememberMe is true, if so create a token
+        // 4. If not than save user data in session :
         let token: string | undefined;
+
         if (rememberMe) {
             token = createToken(
                 {
-                    email : result.data.getEmail(),
-                    name : result.data.getName(),
-                    type : result.data.getType()
+                    email: result.data.getEmail(),
+                    name: result.data.getName(),
                 },
-                '30d' // 30 days expiration
-            ); 
+                '30d'
+            );
         }
-        // 4. Return user data and token
+    
         return {
             success: true,
             data: {
@@ -82,6 +83,5 @@ export class UserManager {
                 token: token
             }
         };
-
     }
 }
