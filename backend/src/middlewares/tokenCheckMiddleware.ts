@@ -1,6 +1,7 @@
 // tokenCheckMiddleware.ts
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { Session } from "express-session";
 
 const SECRET = process.env.JWT_SECRET || 'supersecret';
 
@@ -17,10 +18,16 @@ export const tokenCheckMiddleware = (req: Request, res: Response, next: NextFunc
     const decoded: any = jwt.verify(token, SECRET);
 
     // Restore session if valid token
-    
-    req.session.email = decoded.email;
-    req.session.name = decoded.name;
-    req.session.type = decoded.type; // Assuming type is part of the token payload
+
+    const session = req.session as Session & {
+      email?: string;
+      name?: string;
+      type?: string;
+    };
+      
+    session.email = decoded.email;
+    session.name = decoded.name;
+    session.type = decoded.type; 
 
     // Skip login logic, return success immediately
     return res.status(200).json({
