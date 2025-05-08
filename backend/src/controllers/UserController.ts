@@ -34,10 +34,10 @@ export const UserLogin = async (req: Request, res: Response) => {
     // 2. Login successful, return user data
     const { user, token } = result.data; // Destructure user and token from result.data
 
-    req.session.email   = user.getEmail();
-    req.session.name    = user.getName();
-    req.session.type    = user.getType();;
-
+    req.session.email = user.getEmail();
+    req.session.name = user.getName();
+    req.session.type = user.getType();
+    
     // 3. Login successful, return user info and token (if exists)
     return res.status(200).json({
         message: "Login successful",
