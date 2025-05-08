@@ -98,4 +98,37 @@ export class UserRepository {
         }
     }
 
+    static async findById(id: number):
+    Promise<Result<string>> {
+        try {
+            const sql = `SELECT * FROM users WHERE id = ? LIMIT 1`;
+            const [rows] = await db.execute(sql, [id]);
+
+            const userData = (rows as any[])[0];
+
+            if (!userData) {
+                return {
+                    success: false,
+                    error: "User not found"
+                };
+            }
+
+            const user = new User(
+                userData.name,
+                userData.email,
+                userData.password,
+                userData.type
+            );
+
+            return {
+                success: true,
+                data: "User found"
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: "Database error while searching user"
+            };
+        }
+    }
 }

@@ -8,8 +8,9 @@ const SECRET = process.env.JWT_SECRET || 'supersecret';
 export const tokenCheckMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
 
+  // 1. Skip if no token
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return next(); // No token → continue to normal login
+    return next();
   }
 
   const token = authHeader.split(" ")[1];
@@ -17,19 +18,17 @@ export const tokenCheckMiddleware = (req: Request, res: Response, next: NextFunc
   try {
     const decoded: any = jwt.verify(token, SECRET);
 
-    // Restore session if valid token
-
+    // 2. If token valid, restore session and return response directly
     const session = req.session as Session & {
       email?: string;
       name?: string;
       type?: string;
     };
-      
-    session.email = decoded.email;
-    session.name = decoded.name;
-    session.type = decoded.type; 
 
-    // Skip login logic, return success immediately
+    session.email = decoded.email;
+    session.name  = decoded.name;
+    session.type  = decoded.type;
+
     return res.status(200).json({
       message: "Auto-login successful via token",
       user: {
@@ -37,8 +36,10 @@ export const tokenCheckMiddleware = (req: Request, res: Response, next: NextFunc
         email: decoded.email,
         name: decoded.name,
       }
+
     });
   } catch (err) {
-    return next(); // Invalid token → fallback to login logic
+    // 3. If token invalid → proceed to normal login
+    return next();
   }
 };
