@@ -9,31 +9,163 @@ import { User } from '../models/User';
 export class TaskRepository {
 
     // 1. createTask method to insert a new task into the database
-// TaskRepository.ts
-static async createTask(task: Task): Promise<Result<Task>> {
-    try {
-        const sql = `INSERT INTO tasks (user_id, title, description, status, type, created_at) VALUES (?, ?, ?, ?, ?, ?)`;
-        const [result] = await db.execute(sql, [
-            task.getUserId(),
-            task.getTitle(),
-            task.getDescription(),
-            task.getStatus(),
-            task.getType(),
-            task.getCreatedAt()
-        ]);
-       
+    // TaskRepository.ts
+    static async createTask(task: Task): Promise<Result<Task>> {
+        try {
+            const sql = `INSERT INTO tasks (user_id, title, description, status, type, created_at) VALUES (?, ?, ?, ?, ?, ?)`;
+            const [result] = await db.execute(sql, [
+                task.getUserId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getStatus(),
+                task.getType(),
+                task.getCreatedAt()
+            ]);
 
-        return {
-            success: true,
-            data: task
-        };
-    } catch (error: any) {
-        return {
-            success: false,
-            error: `Failed to insert task: ${error.message}`
-        };
+
+            return {
+                success: true,
+                data: task
+            };
+        } catch (error: any) {
+            return {
+                success: false,
+                error: `Failed to insert task: ${error.message}`
+            };
+        }
     }
-}
+
+    static async deleteTask(taskId: number): Promise<Result<void>> {
+        try {
+            const sql = `DELETE FROM tasks WHERE id = ?`;
+            await db.execute(sql, [taskId]);
+            return {
+                success: true,
+                data: undefined
+            };
+        } catch (error: any) {
+            return {
+                success: false,
+                error: `Failed to delete task: ${error.message}`
+            };
+        }
+    }
+    static async updateTask(task: Task): Promise<Result<Task>> {
+        try {
+            const sql = `UPDATE tasks SET title = ?, description = ?, status = ?, type = ? WHERE id = ?`;
+            await db.execute(sql, [
+                task.getTitle(),
+                task.getDescription(),
+                task.getStatus(),
+                task.getType(),
+                task.getId()
+            ]);
+            return {
+                success: true,
+                data: task
+            };
+        } catch (error: any) {
+            return {
+                success: false,
+                error: `Failed to update task: ${error.message}`
+            };
+        }
+    }
+    static async getAllTasks(user_id : number): Promise<Result<Task[]>> {
+        try {
+            const sql = `SELECT * FROM tasks WHERE user_id = ?`;
+            const [rows] = await db.execute(sql, [user_id]); // Replace with actual user ID
+            const tasks: Task[] = (rows as any[]).map(row => new Task(
+                row.id,
+                row.title,
+                row.description,
+                row.status,
+                row.type,
+                row.created_at
+            ));
+            return {
+                success: true,
+                data: tasks
+            };
+        } catch (error: any) {
+            return {
+                success: false,
+                error: `Failed to fetch tasks: ${error.message}`
+            };
+        }
+    }
+    // 4. getTask by this day : 
+    static async getTaskByDate(user_id : number, date: Date): Promise<Result<Task[]>> {
+        try {
+            const sql = `SELECT * FROM tasks WHERE user_id = ? AND DATE(created_at) = DATE(?)`;
+            const [rows] = await db.execute(sql, [user_id, date]); // Replace with actual user ID
+            const tasks: Task[] = (rows as any[]).map(row => new Task(
+                row.id,
+                row.title,
+                row.description,
+                row.status,
+                row.type,
+                row.created_at
+            ));
+            return {
+                success: true,
+                data: tasks
+            };
+        } catch (error: any) {
+            return {
+                success: false,
+                error: `Failed to fetch tasks by date: ${error.message}`
+            };
+        }
+    }
+    // 5. getTask by this week :
+    static async getTaskByWeek(user_id : number, startDate: Date, endDate: Date): Promise<Result<Task[]>> {
+        try {
+            const sql = `SELECT * FROM tasks WHERE user_id = ? AND created_at BETWEEN ? AND ?`;
+            const [rows] = await db.execute(sql, [user_id, startDate, endDate]); // Replace with actual user ID
+            const tasks: Task[] = (rows as any[]).map(row => new Task(
+                row.id,
+                row.title,
+                row.description,
+                row.status,
+                row.type,
+                row.created_at
+            ));
+            return {
+                success: true,
+                data: tasks
+            };
+        } catch (error: any) {
+            return {
+                success: false,
+                error: `Failed to fetch tasks by week: ${error.message}`
+            };
+        }
+    }
+    // 6. getTask by this month :
+    static async getTaskByMonth(user_id : number, month: number, year: number): Promise<Result<Task[]>> {
+        try {
+            const sql = `SELECT * FROM tasks WHERE user_id = ? AND MONTH(created_at) = ? AND YEAR(created_at) = ?`;
+            const [rows] = await db.execute(sql, [user_id, month, year]); // Replace with actual user ID
+            const tasks: Task[] = (rows as any[]).map(row => new Task(
+                row.id,
+                row.title,
+                row.description,
+                row.status,
+                row.type,
+                row.created_at
+            ));
+            return {
+                success: true,
+                data: tasks
+            };
+        } catch (error: any) {
+            return {
+                success: false,
+                error: `Failed to fetch tasks by month: ${error.message}`
+            };
+        }
+    }
 
 
 }
