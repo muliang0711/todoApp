@@ -232,31 +232,5 @@ export class TaskManager {
 
     }
 
-    // 8. getTasksInCompleted method to get all tasks in completed by userId
-    static async getTasksInCompleted(userId: number): Promise<Result<Task[]>> {
-        // 1. check if user exists
-        const userExists = await UserRepository.findById(userId);
-        if (!userExists.success || !userExists.data) {
-            return {
-                success: false,
-                error: `${userExists.error}`
-            };
-        }
-        // 2. get all tasks in completed by userId
-        const result = await TaskRepository.getTaskInCompleted(userId);
-        // 3. check if result is success or not
-        if (!result.success) {
-            return {
-                success: false,
-                error: ` Error happend on db : ${result.error}`
-            };
-        }
-        // 4. return tasks
-        return {
-            success: true,
-            data: result.data
-        };
 
-    }
-    
 }

@@ -177,6 +177,8 @@ export class TaskRepository {
             };
         }
     }
+
+    // Suport methods for TaskRepository : 
     // 8. findTaskById method to fetch a task by its ID
     static async findTaskById(taskId: number): Promise<Result<Task>> {
         try {
