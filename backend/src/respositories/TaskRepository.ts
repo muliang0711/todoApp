@@ -9,7 +9,6 @@ import { User } from '../models/User';
 export class TaskRepository {
 
     // 1. createTask method to insert a new task into the database
-    // TaskRepository.ts
     static async createTask(task: Task): Promise<Result<Task>> {
         try {
             const sql = `INSERT INTO tasks (user_id, title, description, status, type, created_at) VALUES (?, ?, ?, ?, ?, ?)`;
@@ -34,7 +33,7 @@ export class TaskRepository {
             };
         }
     }
-
+    // 2. deleteTask method to delete a task from the database
     static async deleteTask(taskId: number): Promise<Result<void>> {
         try {
             const sql = `DELETE FROM tasks WHERE id = ?`;
@@ -50,6 +49,7 @@ export class TaskRepository {
             };
         }
     }
+    // 3. updateTask method to update an existing task in the database
     static async updateTask(task: Task): Promise<Result<Task>> {
         try {
             const sql = `UPDATE tasks SET title = ?, description = ?, status = ?, type = ? WHERE id = ?`;
@@ -71,7 +71,8 @@ export class TaskRepository {
             };
         }
     }
-    static async getAllTasks(user_id : number): Promise<Result<Task[]>> {
+    // 4. getAllTasks method to fetch all tasks for a specific user
+    static async getAllTasksByUserId(user_id : number): Promise<Result<Task[]>> {
         try {
             const sql = `SELECT * FROM tasks WHERE user_id = ?`;
             const [rows] = await db.execute(sql, [user_id]); 
@@ -94,7 +95,7 @@ export class TaskRepository {
             };
         }
     }
-    // 4. getTask by this day : 
+    // 5. getTask by this day : 
     static async getTaskByDate(user_id : number, date: Date): Promise<Result<Task[]>> {
         try {
             const sql = `SELECT * FROM tasks WHERE user_id = ? AND DATE(created_at) = DATE(?)`;
@@ -118,7 +119,7 @@ export class TaskRepository {
             };
         }
     }
-
+    // 6. getTaskInProgress method to fetch all tasks in progress for a specific user
     static async getTaskInProgress(user_id : number):Promise<Result<Task[]>>{
 
         try{
@@ -147,7 +148,7 @@ export class TaskRepository {
             };
         }
     }
-
+    // 7. getTaskInCompleted method to fetch all tasks in completed for a specific user
     static async getTaskInCompleted(user_id : number):Promise<Result<Task[]>>{
         // 1. sql query to get all tasks in completed
         try{
@@ -176,7 +177,7 @@ export class TaskRepository {
             };
         }
     }
-
+    // 8. findTaskById method to fetch a task by its ID
     static async findTaskById(taskId: number): Promise<Result<Task>> {
         try {
             const sql = `SELECT * FROM tasks WHERE id = ?`;
