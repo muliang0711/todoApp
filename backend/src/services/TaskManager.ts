@@ -58,4 +58,32 @@ export class TaskManager {
 
     }
 
+    // 2. deleteTask method to delete a task by its ID
+    static async deleteTask(taskId: number): Promise<Result<string | undefined>> {
+        // 1. check if task exists
+        const taskExists = await TaskRepository.findTaskById(taskId);
+        if (!taskExists.success || !taskExists.data) {
+            return {
+                success: false,
+                error: "Task not found."
+            };
+        }
+        // 2. delete task
+        const result = await TaskRepository.deleteTask(taskId);
+
+        // 3. check if deletion was successful
+        if(!result.success){
+            return {
+                success : false , 
+                error : "Failed to delete task."
+            }
+        }
+
+        // 4. else the task was deleted successfully
+        return {
+            success : true ,
+            data : "Task deleted successfully."
+        };
+    }
+
 }

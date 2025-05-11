@@ -7,5 +7,5 @@ const router = Router();
 // 2. Define routes for task-related operations
 // 3. POST /api/tasks/create - Create a new task
 router.post("/create", sessionCheckMiddleware, TaskController.createTask);
-
+router.post{"/delete", sessionCheckMiddleware, TaskController.deleteTask};
 export default router;

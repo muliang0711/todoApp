@@ -74,7 +74,7 @@ export class TaskRepository {
     static async getAllTasks(user_id : number): Promise<Result<Task[]>> {
         try {
             const sql = `SELECT * FROM tasks WHERE user_id = ?`;
-            const [rows] = await db.execute(sql, [user_id]); // Replace with actual user ID
+            const [rows] = await db.execute(sql, [user_id]); 
             const tasks: Task[] = (rows as any[]).map(row => new Task(
                 row.id,
                 row.title,
@@ -118,11 +118,15 @@ export class TaskRepository {
             };
         }
     }
-    // 5. getTask by this week :
-    static async getTaskByWeek(user_id : number, startDate: Date, endDate: Date): Promise<Result<Task[]>> {
-        try {
-            const sql = `SELECT * FROM tasks WHERE user_id = ? AND created_at BETWEEN ? AND ?`;
-            const [rows] = await db.execute(sql, [user_id, startDate, endDate]); // Replace with actual user ID
+
+    static async getTaskInProgress(user_id : number):Promise<Result<Task[]>>{
+
+        try{
+            // 1. sql query to get all tasks in progress
+            const sql = `SELECT * FROM tasks WHERE user_id = ? AND status = 'incompleted'`;
+            // 2. use prepared statement to prevent sql injection
+            const [rows] = await db.execute(sql, [user_id]); // Replace with actual user ID
+            // 3. map the rows to Task objects
             const tasks: Task[] = (rows as any[]).map(row => new Task(
                 row.id,
                 row.title,
@@ -131,41 +135,76 @@ export class TaskRepository {
                 row.type,
                 row.created_at
             ));
+            // 4. return the tasks
             return {
                 success: true,
                 data: tasks
             };
-        } catch (error: any) {
+        }catch(error : any){
             return {
                 success: false,
-                error: `Failed to fetch tasks by week: ${error.message}`
+                error: `Failed to fetch tasks in progress: ${error.message}`
             };
         }
     }
-    // 6. getTask by this month :
-    static async getTaskByMonth(user_id : number, month: number, year: number): Promise<Result<Task[]>> {
+
+    static async getTaskInCompleted(user_id : number):Promise<Result<Task[]>>{
+        // 1. sql query to get all tasks in completed
+        try{
+            const sql = `SELECT * FROM tasks WHERE user_id = ? AND status = 'completed'`;
+            // 2. use prepared statement to prevent sql injection
+            const [rows] = await db.execute(sql, [user_id]); // Replace with actual user ID
+            // 3. map the rows to Task objects
+            const tasks : Task[] = (rows as any[]).map(rows => new Task(
+                rows.id,
+                rows.title,
+                rows.description,
+                rows.status,
+                rows.type,
+                rows.created_at
+            ));
+            // 4. return the tasks
+            return {
+                success: true,
+                data: tasks
+            };
+        }catch(error : any){
+            // 5. return error if failed
+            return {
+                success: false,
+                error: `Failed to fetch tasks in completed: ${error.message}`
+            };
+        }
+    }
+
+    static async findTaskById(taskId: number): Promise<Result<Task>> {
         try {
-            const sql = `SELECT * FROM tasks WHERE user_id = ? AND MONTH(created_at) = ? AND YEAR(created_at) = ?`;
-            const [rows] = await db.execute(sql, [user_id, month, year]); // Replace with actual user ID
-            const tasks: Task[] = (rows as any[]).map(row => new Task(
+            const sql = `SELECT * FROM tasks WHERE id = ?`;
+            const [rows] = await db.execute(sql, [taskId]);
+            if ((rows as any[]).length === 0) {
+                return {
+                    success: false,
+                    error: "Task not found."
+                };
+            }
+            const row = (rows as any[])[0];
+            const task = new Task(
                 row.id,
                 row.title,
                 row.description,
                 row.status,
                 row.type,
                 row.created_at
-            ));
+            );
             return {
                 success: true,
-                data: tasks
+                data: task
             };
         } catch (error: any) {
             return {
                 success: false,
-                error: `Failed to fetch tasks by month: ${error.message}`
+                error: `Failed to fetch task by ID: ${error.message}`
             };
         }
     }
-
-
 }
