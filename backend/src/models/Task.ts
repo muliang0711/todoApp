@@ -1,5 +1,5 @@
 export class Task {
-    
+
     private id : number ;
     private userId : number  ;
     private title : string ;
@@ -7,7 +7,7 @@ export class Task {
     private status : "incompleted" | "completed" ;
     private type : string ;
     private createdAt : Date ;
-
+    
     constructor(id : number  , userId : number  , title : string , description : string , status : "incompleted" | "completed" , type : string , cvreatedAt ?: Date ) {
         this.id = id ;
         this.userId = userId ;
@@ -17,7 +17,7 @@ export class Task {
         this.type = type ;
         this.createdAt = cvreatedAt ? cvreatedAt : new Date() ;
     }
-
+    
     getId() : number  {
         return this.id ;
     }
@@ -42,4 +42,7 @@ export class Task {
     public setId(newId: number) {
         this.id = newId;
     }
-}
+   
+} 
+
+    

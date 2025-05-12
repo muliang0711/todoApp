@@ -1,17 +1,10 @@
-
-// 1. import db from the config/db.ts file to execute queries
-
-// 2. import User from the UserModel.ts file to use the User class
-
 import { db } from '../config/db';
 import { User } from '../models/User';
 import { Result } from '../types/common';
 
-// 3. define UserRepository class to handle user-related database operations
-
 export class UserRepository {
-    // 1. createUser method to insert a new user into the database
-    static async UserRegister(user: User): Promise<Result<number>> {
+    // Create user method to insert a new user into the database
+    static async UserRegister(user: User): Promise<Result<User>> {
         try {
             const sql = `INSERT INTO users (name, email, password, type) VALUES (?, ?, ?, ?)`;
             const [result] = await db.execute(sql, [
@@ -20,9 +13,14 @@ export class UserRepository {
                 user.getPassword(),
                 user.isPro() ? 'pro' : 'normal'
             ]);
+            
+            // Set the auto-generated ID to the user object
+            const userId = (result as any).insertId;
+            user.setId(userId);
+            
             return {
                 success: true,
-                data: (result as any).insertId
+                data: user // Return the user object with the ID set
             };
         } catch (error) {
             return {
@@ -31,9 +29,9 @@ export class UserRepository {
             };
         }
     }
-    // 3. login method to check if a user exists in the database
-    static async Userlogin (email : string , password : string ):
-    Promise<Result<User>>{
+    
+    // Login method to check if a user exists in the database
+    static async Userlogin(email: string, password: string): Promise<Result<User>> {
         try {
             const sql = `SELECT * FROM users WHERE email = ? AND password = ? LIMIT 1`;
             const [rows] = await db.execute(sql, [email, password]);
@@ -46,26 +44,29 @@ export class UserRepository {
                     error: "Invalid email or password"
                 };
             }
+            
             const user = new User(
                 userData.name,
                 userData.email,
                 userData.password,
-                userData.type
+                userData.type,
+                userData.id || userData.user_id // Handle both field names for ID
             );
+            
             return {
                 success: true,
-                data: user // or any other user data you want to return
+                data: user // Return the user object with the ID set
             };
-        }catch (error) {
+        } catch (error) {
             return {
                 success: false,
                 error: "Database error while logging in"
             };
         }   
-    } 
-    // 2. findByEmail method to find a user by email
-    static async findByEmail(email: string): 
-    Promise<Result<User>> {
+    }
+    
+    // Find user by email method
+    static async findUserByEmail(email: string): Promise<Result<User>> {
         try {
             const sql = `SELECT * FROM users WHERE email = ? LIMIT 1`;
             const [rows] = await db.execute(sql, [email]);
@@ -83,12 +84,13 @@ export class UserRepository {
                 userData.name,
                 userData.email,
                 userData.password,
-                userData.type
+                userData.type,
+                userData.id || userData.user_id // Handle both field names for ID
             );
 
             return {
                 success: true,
-                data: user
+                data: user // Return the user object with the ID set
             };
         } catch (error) {
             return {
@@ -98,8 +100,8 @@ export class UserRepository {
         }
     }
 
-    static async findById(id: number):
-    Promise<Result<string>> {
+    // Find user by ID method
+    static async findUserById(id: number): Promise<Result<User>> {
         try {
             const sql = `SELECT * FROM users WHERE id = ? LIMIT 1`;
             const [rows] = await db.execute(sql, [id]);
@@ -117,12 +119,13 @@ export class UserRepository {
                 userData.name,
                 userData.email,
                 userData.password,
-                userData.type
+                userData.type,
+                userData.id || userData.user_id // Handle both field names for ID
             );
 
             return {
                 success: true,
-                data: "User found"
+                data: user // Return the user object with the ID set
             };
         } catch (error) {
             return {

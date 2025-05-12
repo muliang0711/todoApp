@@ -3,7 +3,7 @@
 import { db } from '../config/db';
 import { Task } from '../models/Task';
 import { Result } from '../types/common';
-import { User } from '../models/User';
+
 
 // 2. define TaskRepository class to handle task-related database operations
 export class TaskRepository {

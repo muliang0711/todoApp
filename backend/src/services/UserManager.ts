@@ -15,57 +15,41 @@ export class UserManager {
         email: string,
         password: string,
         type: "normal" | "pro"
-    ): Promise<Result<number>> {
-        // 1. Check if user already exists
-        const existing = await UserRepository.findByEmail(email);
-
+    ): Promise<Result<User>> {
+        const existing = await UserRepository.findUserByEmail(email);
         if (existing.success && existing.data) {
-            return {
-                success: false,
-                error: "Email already registered."
-            };
+            return { success: false, error: "Email already registered." };
         }
-
-        // 2. Create new User
+    
         const user = new User(name, email, password, type);
-
-        // 3. Try saving user
         const result = await UserRepository.UserRegister(user);
-
-        // 4. Return result
-        if (!result.success) {
-            return {
-                success: false,
-                error: "Failed to create user."
-            };
+    
+        if (!result.success || !result.data?.getId()) {
+            return { success: false, error: "Failed to create user." };
         }
-
+        
+        const userObj = result.data;
         return {
             success: true,
-            data: result.data
+            data: userObj // Return the user object with the ID set
         };
     }
-
+    
     static async UserLogin(
         email: string,
         password: string,
-        rememberMe: boolean , 
-    ): Promise<Result<{user : User ; token? : string}>> {
-        // 1. Check if user exists than Login 
+        rememberMe: boolean
+    ): Promise<Result<{ user: User; token?: string }>> {
         const result = await UserRepository.Userlogin(email, password);
-
-        // 2. If user not found, return error
+    
         if (!result.success || !result.data) {
             return {
                 success: false,
                 error: "Invalid email or password."
             };
         }
-
-        // 3. Check if the rememberMe is true, if so create a token
-        // 4. If not than save user data in session :
+    
         let token: string | undefined;
-
         if (rememberMe) {
             token = createToken(
                 {
@@ -75,13 +59,37 @@ export class UserManager {
                 '30d'
             );
         }
-    
+        
+        const userObj = result.data;
+
         return {
             success: true,
-            data: {
-                user: result.data,
-                token: token
-            }
+            data: { user: userObj, token }
         };
     }
+    
+    static async findUserByEmail(email: string): Promise<Result<User>> {
+        const result = await UserRepository.findUserByEmail(email);
+        if (!result.success || !result.data) {
+            return { success: false, error: "User not found." };
+        }
+
+        const userObj = result.data;
+        return {
+            success: true,
+            data: userObj // Return the user object with the ID set
+        };
+
+    }
+
+    static async findUserById(id: number): Promise<Result<User>> {
+        const result = await UserRepository.findUserById(id);
+        if (!result.success || !result.data) {
+            return { success: false, error: "User not found." };
+        }
+        const userObj = result.data;
+        return { success: true, data: userObj };
+    }
+    
+
 }
