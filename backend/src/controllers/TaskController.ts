@@ -5,7 +5,7 @@
 import { Request, Response } from "express";
 import { TaskManager } from "../services/TaskManager";
 import { Task } from "../models/Task";
-import { Session } from "express-session";
+import session, { Session } from "express-session";
 import { UserRepository } from "../respositories/UserRepository";
 // 3. define TaskController class to handle task-related requests
 export class TaskController {
@@ -50,7 +50,7 @@ export class TaskController {
             return res.status(400).json({ error: result.error });
         }
         // 4. if success, return the taskId   
-        return res.status(201).json({ task: result.data });
+        return res.status(201).json({ task: result.data, session });
     }
 
     // 2. deleteTask method to handle task deletion requests
@@ -64,7 +64,7 @@ export class TaskController {
             return res.status(400).json({ error: result.error });
         }
         // 4. if success, return the taskId   
-        return res.status(200).json({ message: "Task deleted successfully" });
+        return res.status(200).json({ message: "Task deleted successfully"  });
     }
 
     // 3. updateTask method to handle task update requests
@@ -101,7 +101,7 @@ export class TaskController {
             return res.status(400).json({ error: result.error });
         }
         // 6. if success, return the taskId   
-        return res.status(200).json({ message: "Task updated successfully" });
+        return res.status(200).json({ message: "Task updated successfully" , task: result.data });
     }
 
     // 4. getAllTasks method to handle task retrieval requests

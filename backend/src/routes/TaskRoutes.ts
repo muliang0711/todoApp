@@ -11,7 +11,7 @@ router.post("/create", sessionCheckMiddleware, TaskController.createTask);
 // 2. DELETE /api/tasks/delete/:taskId - Delete a task
 router.delete("/delete/:taskId", sessionCheckMiddleware, TaskController.deleteTask);
 // 3. POST /api/tasks/update - Update an existing task
-router.post("/update", sessionCheckMiddleware, TaskController.updateTask);
+router.post("/update/:taskId", sessionCheckMiddleware, TaskController.updateTask);
 // 4. GET /api/tasks/getAll - Get all tasks
 router.get("/getAll", sessionCheckMiddleware, TaskController.getAllTasksByUserId);
 // 5. GET /api/tasks/getTaksInProgress - Get tasks in progress
